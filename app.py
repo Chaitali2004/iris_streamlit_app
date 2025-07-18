@@ -1,41 +1,70 @@
-
-
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
 import matplotlib.pyplot as plt
+import os
 
-# Load model
-model = joblib.load("iris_model.pkl")
+# ------------------------------------------
+# 🎯 Page Config
+# ------------------------------------------
+st.set_page_config(
+    page_title="Iris Flower Classifier",
+    page_icon="🌸",
+    layout="centered",
+)
 
-# Title
+# ------------------------------------------
+# 📦 Load Trained Model (with caching)
+# ------------------------------------------
+@st.cache_resource
+def load_model():
+    try:
+        return joblib.load("iris_model.pkl")
+    except FileNotFoundError:
+        st.error("❌ Model file not found. Please upload 'iris_model.pkl' to the app directory.")
+        return None
+
+model = load_model()
+species_names = ["Setosa", "Versicolor", "Virginica"]
+
+# ------------------------------------------
+# 🖼️ App Header
+# ------------------------------------------
 st.title("🌸 Iris Flower Classifier")
-st.write("Enter the flower features to predict the species.")
+st.markdown("Enter the flower's measurements to predict its species using a trained ML model.")
 
-# User input
-sepal_length = st.slider("Sepal Length (cm)", 4.0, 8.0, 5.1)
-sepal_width = st.slider("Sepal Width (cm)", 2.0, 4.5, 3.5)
-petal_length = st.slider("Petal Length (cm)", 1.0, 7.0, 1.4)
-petal_width = st.slider("Petal Width (cm)", 0.1, 2.5, 0.2)
+# ------------------------------------------
+# 📥 User Inputs
+# ------------------------------------------
+with st.form("input_form"):
+    st.subheader("🔧 Input Flower Features")
+    sepal_length = st.slider("Sepal Length (cm)", 4.0, 8.0, 5.1)
+    sepal_width = st.slider("Sepal Width (cm)", 2.0, 4.5, 3.5)
+    petal_length = st.slider("Petal Length (cm)", 1.0, 7.0, 1.4)
+    petal_width = st.slider("Petal Width (cm)", 0.1, 2.5, 0.2)
 
-# Create input data
-input_data = pd.DataFrame([[sepal_length, sepal_width, petal_length, petal_width]],
-                          columns=["sepal length (cm)", "sepal width (cm)",
-                                   "petal length (cm)", "petal width (cm)"])
+    submitted = st.form_submit_button("Predict")
 
-# Prediction
-prediction = model.predict(input_data)
-proba = model.predict_proba(input_data)
-species = ["Setosa", "Versicolor", "Virginica"]
+# ------------------------------------------
+# 🔍 Prediction
+# ------------------------------------------
+if submitted and model:
+    input_df = pd.DataFrame([[sepal_length, sepal_width, petal_length, petal_width]],
+                            columns=["sepal length (cm)", "sepal width (cm)", 
+                                     "petal length (cm)", "petal width (cm)"])
 
-# Output
-st.subheader("🔍 Prediction:")
-st.write(f"**Predicted Species:** {species[prediction[0]]}")
+    prediction = model.predict(input_df)[0]
+    probabilities = model.predict_proba(input_df)[0]
 
-# Plot probability
-st.subheader("📊 Prediction Probabilities:")
-fig, ax = plt.subplots()
-ax.bar(species, proba[0], color=["blue", "green", "orange"])
-ax.set_ylabel("Probability")
-st.pyplot(fig)
+    st.subheader("✅ Prediction Result")
+    st.success(f"**Predicted Species:** {species_names[prediction]}")
+
+    # --------------------------------------
+    # 📊 Probability Visualization
+    # --------------------------------------
+    st.subheader("📊 Prediction Probabilities")
+    fig, ax = plt.subplots()
+    ax.bar(species_names, probabilities, color=["#4c72b0", "#55a868", "#c44e52"])
+    ax.set_ylabel("Probability")
+    ax.set_ylim(0, 1)
+    st.pyplot(fig)
