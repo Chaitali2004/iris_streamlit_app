@@ -10,10 +10,8 @@ Users can input flower measurements and get real-time predictions along with mod
 ## 🚀 Live Demo
 If deployed:  
 👉 [Click here to view the live app](https://chaitali2004-iris-streamlit-app-app-3hxx2r.streamlit.app/)
-<img width="1147" height="821" alt="image" src="https://github.com/user-attachments/assets/534c2398-764a-43d0-b4b5-6a3468dd5abe" />
-<img width="1029" height="755" alt="image" src="https://github.com/user-attachments/assets/532a4ab6-b51e-4183-996f-7ebbc6596925" />
-
-
+<img width="966" height="813" alt="image" src="https://github.com/user-attachments/assets/bc89092d-fc1c-434a-9280-7c5e2d2b7f46" />
+<img width="903" height="775" alt="image" src="https://github.com/user-attachments/assets/cabd62b4-1fc0-4141-91dc-c2ca43fed94a" />
 
 ---
 
